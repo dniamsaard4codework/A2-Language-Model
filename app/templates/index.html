@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TinyStories Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #fafafa;
+            color: #1a1a1a;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 640px;
+            margin: 0 auto;
+            padding: 60px 24px;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        h1 {
+            font-size: 28px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 14px;
+            font-weight: 400;
+        }
+
+        /* Card */
+        .card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.04);
+            margin-bottom: 24px;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: #444;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 16px;
+            border: 1px solid #e5e5e5;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 16px;
+            resize: vertical;
+            min-height: 100px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            background: #fafafa;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #1a1a1a;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(0,0,0,0.05);
+        }
+
+        textarea::placeholder {
+            color: #999;
+        }
+
+        /* Sliders */
+        .slider-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .slider-value {
+            font-size: 14px;
+            font-weight: 500;
+            color: #1a1a1a;
+            background: #f0f0f0;
+            padding: 4px 10px;
+            border-radius: 6px;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 6px;
+            background: #e5e5e5;
+            border-radius: 3px;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #1a1a1a;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.15s;
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: #1a1a1a;
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
+
+        /* Button */
+        button[type="submit"] {
+            width: 100%;
+            padding: 16px 24px;
+            background: #1a1a1a;
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.15s;
+        }
+
+        button[type="submit"]:hover {
+            background: #333;
+        }
+
+        button[type="submit"]:active {
+            transform: scale(0.98);
+        }
+
+        button[type="submit"]:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        /* Examples */
+        .examples {
+            margin-bottom: 24px;
+        }
+
+        .examples-title {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .example-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .chip {
+            padding: 8px 14px;
+            background: #f5f5f5;
+            border: 1px solid #eee;
+            border-radius: 20px;
+            font-size: 13px;
+            color: #555;
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+
+        .chip:hover {
+            background: #eee;
+            border-color: #ddd;
+            color: #1a1a1a;
+        }
+
+        /* Output */
+        .output-section {
+            margin-top: 32px;
+        }
+
+        .output-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .output-title {
+            font-size: 13px;
+            font-weight: 500;
+            color: #444;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .output-box {
+            background: #f8f8f8;
+            border: 1px solid #eee;
+            border-radius: 12px;
+            padding: 20px;
+            min-height: 120px;
+            font-size: 15px;
+            line-height: 1.7;
+            color: #333;
+            white-space: pre-wrap;
+        }
+
+        .output-box.empty {
+            color: #999;
+            font-style: italic;
+        }
+
+        .output-box.loading {
+            color: #666;
+        }
+
+        .loading-dots::after {
+            content: '';
+            animation: dots 1.5s infinite;
+        }
+
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 24px;
+            color: #999;
+            font-size: 13px;
+        }
+
+        footer a {
+            color: #666;
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            color: #1a1a1a;
+        }
+
+        /* Info badge */
+        .info-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: #f0f7ff;
+            border-radius: 20px;
+            font-size: 12px;
+            color: #0066cc;
+            margin-bottom: 24px;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .container {
+                padding: 40px 16px;
+            }
+
+            .card {
+                padding: 24px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>TinyStories</h1>
+            <p class="subtitle">LSTM Language Model Story Generator</p>
+        </header>
+
+        <div class="card">
+            <div class="info-badge">
+                <span></span>
+                <span>2-layer LSTM · 512 hidden units · Trained on TinyStories</span>
+            </div>
+
+            <form id="generateForm">
+                <div class="form-group">
+                    <label for="prompt">Your Prompt</label>
+                    <textarea 
+                        id="prompt" 
+                        name="prompt" 
+                        placeholder="Start your story here..."
+                        rows="3"
+                    >Once upon a time</textarea>
+                </div>
+
+                <div class="examples">
+                    <div class="examples-title">Try these</div>
+                    <div class="example-chips">
+                        <span class="chip" data-text="Once upon a time, there was a little girl named">Once upon a time...</span>
+                        <span class="chip" data-text="The dog ran to the park and">The dog ran...</span>
+                        <span class="chip" data-text="In a magical forest, a brave knight">Magical forest...</span>
+                        <span class="chip" data-text="One sunny day, the cat decided to">Sunny day...</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="slider-label">
+                        <label for="temperature">Temperature</label>
+                        <span class="slider-value" id="tempValue">0.7</span>
+                    </div>
+                    <input 
+                        type="range" 
+                        id="temperature" 
+                        min="0.1" 
+                        max="1.5" 
+                        step="0.1" 
+                        value="0.7"
+                    >
+                </div>
+
+                <div class="form-group">
+                    <div class="slider-label">
+                        <label for="max_length">Max Length</label>
+                        <span class="slider-value" id="lengthValue">50</span>
+                    </div>
+                    <input 
+                        type="range" 
+                        id="max_length" 
+                        min="20" 
+                        max="100" 
+                        step="10" 
+                        value="50"
+                    >
+                </div>
+
+                <button type="submit" id="submitBtn">Generate Story</button>
+            </form>
+
+            <div class="output-section">
+                <div class="output-header">
+                    <span class="output-title">Generated Story</span>
+                </div>
+                <div class="output-box empty" id="output">
+                    Your story will appear here...
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>Built by <a href="#">Dechathon Niamsa-ard</a> · A2 Language Model Assignment</p>
+        </footer>
+    </div>
+
+    <script>
+        // Slider value updates
+        document.getElementById('temperature').addEventListener('input', function() {
+            document.getElementById('tempValue').textContent = this.value;
+        });
+
+        document.getElementById('max_length').addEventListener('input', function() {
+            document.getElementById('lengthValue').textContent = this.value;
+        });
+
+        // Example chips
+        document.querySelectorAll('.chip').forEach(chip => {
+            chip.addEventListener('click', function() {
+                document.getElementById('prompt').value = this.dataset.text;
+            });
+        });
+
+        // Form submission
+        document.getElementById('generateForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const btn = document.getElementById('submitBtn');
+            const output = document.getElementById('output');
+            const prompt = document.getElementById('prompt').value.trim();
+
+            if (!prompt) {
+                output.textContent = 'Please enter a prompt first.';
+                output.className = 'output-box empty';
+                return;
+            }
+
+            // Loading state
+            btn.disabled = true;
+            btn.textContent = 'Generating...';
+            output.innerHTML = '<span class="loading-dots">Thinking</span>';
+            output.className = 'output-box loading';
+
+            try {
+                const response = await fetch('/generate', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        prompt: prompt,
+                        temperature: parseFloat(document.getElementById('temperature').value),
+                        max_length: parseInt(document.getElementById('max_length').value)
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.error) {
+                    output.textContent = data.error;
+                    output.className = 'output-box empty';
+                } else {
+                    output.textContent = data.generated_text;
+                    output.className = 'output-box';
+                }
+            } catch (error) {
+                output.textContent = 'Error: ' + error.message;
+                output.className = 'output-box empty';
+            }
+
+            // Reset button
+            btn.disabled = false;
+            btn.textContent = 'Generate Story';
+        });
+    </script>
+</body>
+</html>
