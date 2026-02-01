@@ -1,0 +1,79 @@
+System Architecture
+
+```mermaid
+flowchart TB
+    subgraph Frontend["Frontend (index.html)"]
+        UI[User Interface]
+        Input[Text Input Box]
+        Params[Temperature & Max Length Sliders]
+        Button[Generate Button]
+        Output[Generated Text Display]
+    end
+
+    subgraph Backend["Backend (Flask - app.py)"]
+        Route["/generate endpoint"]
+        Tokenizer[basic_english_tokenizer]
+        GenFunc[generate_text function]
+    end
+
+    subgraph Model["LSTM Language Model"]
+        Embed[Embedding Layer<br/>512 dim]
+        LSTM[2-Layer LSTM<br/>512 hidden units]
+        FC[Linear Output Layer<br/>vocab_size]
+    end
+
+    subgraph Files["Saved Model Files"]
+        Vocab[vocab.pkl<br/>Vocabulary mapping]
+        Weights[lstm_lm_complete.pt<br/>Model weights]
+    end
+
+    UI --> Input
+    Input --> Button
+    Params --> Button
+    Button -->|POST /generate<br/>JSON: prompt, temp, max_len| Route
+    Route --> Tokenizer
+    Tokenizer -->|Token list| GenFunc
+    GenFunc --> Embed
+    Embed --> LSTM
+    LSTM --> FC
+    FC -->|Softmax + Sampling| GenFunc
+    GenFunc -->|Generated text| Route
+    Route -->|JSON response| Output
+
+    Files -.->|Loaded at startup| Backend
+```
+
+Request-response flow
+
+```mermaid
+sequenceDiagram
+    participant User
+    participant Browser as Frontend (JavaScript)
+    participant Flask as Flask Server
+    participant Model as LSTM Model
+
+    User->>Browser: Enter prompt + Set parameters
+    User->>Browser: Click "Generate"
+    Browser->>Flask: POST /generate<br/>{"prompt": "Once upon a time", "temperature": 0.7, "max_length": 50}
+    
+    Flask->>Flask: Tokenize prompt using basic_english_tokenizer()
+    Flask->>Flask: Convert tokens to indices using vocab
+    Flask->>Model: Initialize hidden state (zeros)
+    
+    loop Autoregressive Generation (up to max_length)
+        Flask->>Model: Forward pass with current indices
+        Model-->>Flask: Output logits for next token
+        Flask->>Flask: Apply temperature scaling
+        Flask->>Flask: Softmax → Probability distribution
+        Flask->>Flask: Sample next token (multinomial)
+        alt Token is <eos>
+            Flask->>Flask: Stop generation
+        else Token is valid
+            Flask->>Flask: Append to sequence
+        end
+    end
+    
+    Flask->>Flask: Convert indices back to words using vocab.itos
+    Flask-->>Browser: {"generated_text": "once upon a time there was a little girl..."}
+    Browser-->>User: Display generated story
+```
